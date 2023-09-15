@@ -21,7 +21,7 @@
 
 namespace Oxide.Plugins
 {
-    [Info("AutoFurnace", "RFC1920", "1.0.1")]
+    [Info("AutoFurnace", "RFC1920", "1.0.2")]
     [Description("Automatically start and stop electric furnace based on contents")]
 
     // If the input slots are empty, turn the furnace off.
@@ -30,12 +30,15 @@ namespace Oxide.Plugins
     {
         private object CanMoveItem(Item item, PlayerInventory inventory, ItemContainerId targetContainerId, int targetSlot, int amount)
         {
-            BaseOven oven = inventory.loot.entitySource as BaseOven;
-            global::ElectricOven furnace = inventory.loot.entitySource.GetComponent<global::ElectricOven>();
-            ItemContainer targetContainer = inventory.FindContainer(targetContainerId);
+            if (item == null) return null;
+            if (inventory == null) return null;
+
+            BaseOven oven = inventory?.loot.entitySource as BaseOven;
+            global::ElectricOven furnace = inventory?.loot?.entitySource?.GetComponent<global::ElectricOven>();
+            ItemContainer targetContainer = inventory?.FindContainer(targetContainerId);
             if (targetContainer != null && !(targetContainer?.entityOwner is BaseOven)) return null;
 
-            if (furnace != null && furnace is global::ElectricOven && oven.inventory.GetSlot(0) != null && oven.inventory.GetSlot(1) != null)
+            if (furnace != null && furnace is global::ElectricOven && oven?.inventory.GetSlot(0) != null && oven?.inventory.GetSlot(1) != null)
             {
                 oven.StartCooking();
             }
@@ -44,7 +47,7 @@ namespace Oxide.Plugins
 
         private void OnOvenCooked(BaseOven oven, Item item, BaseEntity slot)
         {
-            global::ElectricOven furnace = oven.GetComponent<global::ElectricOven>();
+            global::ElectricOven furnace = oven?.GetComponent<global::ElectricOven>();
             if (furnace != null)
             {
                 if (oven.inventory == null || oven.inventory.itemList.Count == 0)
